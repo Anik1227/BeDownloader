@@ -1,0 +1,36 @@
+name: Behance Auto Downloader
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Paste Behance URL"
+        required: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: |
+        npm install
+        npx playwright install
+
+    - name: Run downloader
+      run: |
+        node index.js "${{ github.event.inputs.url }}"
+
+    - name: Upload images
+      uses: actions/upload-artifact@v4
+      with:
+        name: behance-images
+        path: downloads/
